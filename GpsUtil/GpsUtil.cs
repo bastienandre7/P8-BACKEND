@@ -19,10 +19,10 @@ public class GpsUtil
         {
             Sleep();
 
-            double longitude = ThreadLocalRandom.NextDouble(-180.0, 180.0);
+            double longitude = -110;
             longitude = Math.Round(longitude, 6);
 
-            double latitude = ThreadLocalRandom.NextDouble(-90, 90);
+            double latitude = 80;
             latitude = Math.Round(latitude, 6);
 
             VisitedLocation visitedLocation = new(userId, new Locations(latitude, longitude), DateTime.UtcNow);
@@ -45,11 +45,11 @@ public class GpsUtil
 
             List<Attraction> attractions = new()
         {
-            new Attraction("Disneyland", "Anaheim", "CA", 33.817595, -117.922008),
-            new Attraction("Jackson Hole", "Jackson Hole", "WY", 43.582767, -110.821999),
-            new Attraction("Mojave National Preserve", "Kelso", "CA", 35.141689, -115.510399),
-            new Attraction("Joshua Tree National Park", "Joshua Tree National Park", "CA", 33.881866, -115.90065),
-            new Attraction("Buffalo National River", "St Joe", "AR", 35.985512, -92.757652),
+            new Attraction("Disneyland", "Anaheim", "CA", 80.817595, -110.922008),
+            new Attraction("Jackson Hole", "Jackson Hole", "WY", 80.582767, -110.821999),
+            new Attraction("Mojave National Preserve", "Kelso", "CA", 80.141689, -110.510399),
+            new Attraction("Joshua Tree National Park", "Joshua Tree National Park", "CA", 80.881866, -110.90065),
+            new Attraction("Buffalo National River", "St Joe", "AR", 80.985512, -110.757652),
             new Attraction("Hot Springs National Park", "Hot Springs", "AR", 34.52153, -93.042267),
             new Attraction("Kartchner Caverns State Park", "Benson", "AZ", 31.837551, -110.347382),
             new Attraction("Legend Valley", "Thornville", "OH", 39.937778, -82.40667),

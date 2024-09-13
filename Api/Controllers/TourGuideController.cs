@@ -1,5 +1,6 @@
 ﻿using GpsUtil.Location;
 using Microsoft.AspNetCore.Mvc;
+using TourGuide.Services;
 using TourGuide.Services.Interfaces;
 using TourGuide.Users;
 using TripPricer;
@@ -11,10 +12,13 @@ namespace TourGuide.Controllers;
 public class TourGuideController : ControllerBase
 {
     private readonly ITourGuideService _tourGuideService;
+    private readonly IRewardsService _rewardsService;
 
-    public TourGuideController(ITourGuideService tourGuideService)
+    public TourGuideController(ITourGuideService tourGuideService, IRewardsService rewardsService)
     {
         _tourGuideService = tourGuideService;
+        _rewardsService = rewardsService;
+
     }
 
     [HttpGet("getLocation")]
@@ -34,11 +38,36 @@ public class TourGuideController : ControllerBase
     // The reward points for visiting each Attraction.
     //    Note: Attraction reward points can be gathered from RewardsCentral
     [HttpGet("getNearbyAttractions")]
-    public ActionResult<List<Attraction>> GetNearbyAttractions([FromQuery] string userName)
+    public ActionResult<List<AttractionInfo>> GetNearbyAttractions([FromQuery] string userName)
     {
-        var visitedLocation = _tourGuideService.GetUserLocation(GetUser(userName));
+        var user = GetUser(userName);
+        var visitedLocation = _tourGuideService.TrackUserLocation(user);
         var attractions = _tourGuideService.GetNearByAttractions(visitedLocation);
-        return Ok(attractions);
+
+        List<AttractionInfo> nearbyAttractions = new();
+
+        foreach (var attraction in attractions)
+        {
+            double distance = _rewardsService.GetDistance(visitedLocation.Location, attraction);
+            _rewardsService.CalculateRewards(user);
+
+
+
+            nearbyAttractions.Add(new AttractionInfo
+            {
+                Name = attraction.AttractionName,
+                Distance = distance,
+                Location = attraction,
+                UserLocation = visitedLocation.Location,
+                RewardPoints = user.UserRewards.Count
+            });
+        }
+
+        nearbyAttractions.Sort((attraction1, attraction2) => attraction1.Distance.CompareTo(attraction2.Distance));
+
+        nearbyAttractions = nearbyAttractions.Take(5).ToList();
+
+        return nearbyAttractions;
     }
 
     [HttpGet("getRewards")]
