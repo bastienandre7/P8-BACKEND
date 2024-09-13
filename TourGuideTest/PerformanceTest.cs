@@ -48,17 +48,17 @@ namespace TourGuideTest
         public void HighVolumeTrackLocation()
         {
             //On peut ici augmenter le nombre d'utilisateurs pour tester les performances
-            _fixture.Initialize(1);
+            _fixture.Initialize(100);
 
             List<User> allUsers = _fixture.TourGuideService.GetAllUsers();
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            foreach (var user in allUsers)
+            Parallel.ForEach(allUsers, user =>
             {
                 _fixture.TourGuideService.TrackUserLocation(user);
-            }
+            });
             stopWatch.Stop();
             _fixture.TourGuideService.Tracker.StopTracking();
 
@@ -71,21 +71,27 @@ namespace TourGuideTest
         public void HighVolumeGetRewards()
         {
             //On peut ici augmenter le nombre d'utilisateurs pour tester les performances
-            _fixture.Initialize(1);
+            _fixture.Initialize(100);
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
             Attraction attraction = _fixture.GpsUtil.GetAttractions()[0];
             List<User> allUsers = _fixture.TourGuideService.GetAllUsers();
-            allUsers.ForEach(u => u.AddToVisitedLocations(new VisitedLocation(u.UserId, attraction, DateTime.Now)));
 
-            allUsers.ForEach(u => _fixture.RewardsService.CalculateRewards(u));
+            Parallel.ForEach(allUsers, u =>
+            {
+                u.AddToVisitedLocations(new VisitedLocation(u.UserId, attraction, DateTime.Now));
+            });
 
-            foreach (var user in allUsers)
+            Parallel.ForEach(allUsers, u =>
+            {
+                _fixture.RewardsService.CalculateRewards(u);
+            });
+            Parallel.ForEach(allUsers, user =>
             {
                 Assert.True(user.UserRewards.Count > 0);
-            }
+            });
             stopWatch.Stop();
             _fixture.TourGuideService.Tracker.StopTracking();
 

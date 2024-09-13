@@ -51,8 +51,6 @@ public class TourGuideController : ControllerBase
             double distance = _rewardsService.GetDistance(visitedLocation.Location, attraction);
             _rewardsService.CalculateRewards(user);
 
-
-
             nearbyAttractions.Add(new AttractionInfo
             {
                 Name = attraction.AttractionName,
