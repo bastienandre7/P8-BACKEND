@@ -26,12 +26,5 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Publish DLLs
-      run: dotnet publish --no-build --configuration Release --output ./output
-    - name: Archive DLLs
-      run: zip -r ./output/DllArchive.zip ./output
-    - name: Upload DLLs as artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: DllArchive
-        path: ./output/DllArchive.zip
+    - name: Zip Folder
+      run: zip -r release.zip .
